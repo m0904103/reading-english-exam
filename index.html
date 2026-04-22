@@ -45,6 +45,14 @@
             <div style="padding: 20px 30px 40px 30px;">
                 <h1 style="color: var(--primary); margin: 0; font-size: 1.8rem;">閱讀英文學文化</h1>
                 <div style="background: var(--secondary); display: inline-block; padding: 2px 15px; border-radius: 20px; font-size: 0.9rem; margin: 10px 0 20px 0; font-weight: bold;">考前特訓</div>
+                
+                <div id="countdown" style="margin: 0 0 25px 0; padding: 15px; background: rgba(239, 68, 68, 0.15); border: 2px dashed var(--error); border-radius: 12px; color: #fca5a5; font-weight: bold; display: flex; flex-direction: column; gap: 8px; animation: pulse 2s infinite;">
+                    <span style="font-size: 0.95rem;">⏳ 距離期中考 (4/25 00:00) 倒數：</span>
+                    <span id="timer-text" style="font-size: 1.6rem; color: #ef4444; letter-spacing: 1px; text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);">計算中...</span>
+                </div>
+
+                <style>@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }</style>
+
                 <p style="opacity: 0.7; font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px;">
                     歡迎來到期中模擬練習系統。<br>
                     本測驗包含 Unit 1 - 9 完整題庫，<br>
@@ -195,7 +203,34 @@
                 mis.map(m => `<div class="mis-item"><b>${m.q}</b><br><span style="color:#22c55e">Ans: ${m.a}</span><br><small>${m.e}</small></div>`).join('');
             }
         }
-        // show(); <-- 移除這行，改由 startQuiz() 觸發
+
+        // 倒數計時器系統
+        function updateTimer() {
+            const now = new Date().getTime();
+            const examStart = new Date("2026-04-25T00:00:00+08:00").getTime();
+            const examEnd = new Date("2026-04-27T23:59:59+08:00").getTime();
+            const timerEl = document.getElementById("timer-text");
+            if (!timerEl) return;
+            
+            if (now < examStart) {
+                const diff = examStart - now;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                timerEl.innerText = `${d}天 ${h}小時 ${m}分 ${s}秒`;
+            } else if (now >= examStart && now <= examEnd) {
+                timerEl.innerHTML = "🔥 期中考進行中！把握最後複習機會！";
+                timerEl.style.color = "var(--success)";
+                timerEl.style.textShadow = "0 0 10px rgba(34, 197, 94, 0.5)";
+            } else {
+                timerEl.innerHTML = "✅ 期中考已結束，辛苦了！";
+                timerEl.style.color = "#94a3b8";
+                timerEl.style.textShadow = "none";
+            }
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
     </script>
 </body>
 </html>
