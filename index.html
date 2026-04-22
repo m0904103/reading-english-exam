@@ -130,11 +130,10 @@
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel(); // 停止之前的朗讀
             
-            // 語音特例處理：讓 potato, potato 發出最極端的對比音
-            // 第一個維持原生標準發音，第二個強制拆解為 poh-tah-toe 以確保母音發音正確
+            // 語音特例處理：使用正統的發音變體拼寫 potahto，讓語音引擎發出自然流暢的 普-他-透
             let speechText = text;
             if (speechText.includes("potato, potato")) {
-                speechText = speechText.replace("potato, potato", "potato, poh tah toe");
+                speechText = speechText.replace("potato, potato", "potato, potahto");
             }
             
             const msg = new SpeechSynthesisUtterance(speechText);
