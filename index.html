@@ -129,7 +129,14 @@
         function speak(text) {
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel(); // 停止之前的朗讀
-            const msg = new SpeechSynthesisUtterance(text);
+            
+            // 語音特例處理：讓 potato, potato 唸出兩種不同的發音
+            let speechText = text;
+            if (speechText.includes("potato, potato")) {
+                speechText = speechText.replace("potato, potato", "po-tay-to, po-tah-to");
+            }
+            
+            const msg = new SpeechSynthesisUtterance(speechText);
             msg.lang = 'en-US';
             msg.rate = 0.9; // 稍微放慢一點，聽起來更親切
             msg.pitch = 1.1; // 稍微調高音調，聽起來更甜美
