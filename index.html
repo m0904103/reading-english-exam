@@ -61,9 +61,9 @@
                     並提供英文語音朗讀與詳細中文解析。
                 </p>
                 
-                <!-- 流量監控計數器 -->
-                <div id="visit-count-box" style="margin-bottom: 25px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; font-size: 0.85rem; color: #94a3b8;">
-                    📊 累積進入點閱次數：<span id="visit-count" style="color: var(--primary); font-weight: bold; font-size: 1rem;">...</span> 次
+                <!-- 專業流量徽章 (Hits Badge) -->
+                <div id="visit-count-box" style="margin-bottom: 25px; display: flex; justify-content: center;">
+                    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fm0904103.github.io%2Freading-english-exam%2F&count_bg=%23818cf8&title_bg=%23334155&icon=&icon_color=%23E7E7E7&title=Total+Visits&edge_flat=false" alt="Hits" style="height: 28px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-radius: 4px;">
                 </div>
 
                 <button class="btn" style="display: block; width: 100%; padding: 18px; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(129, 140, 248, 0.4);" onclick="startQuiz()">
@@ -282,18 +282,6 @@
         }
         setInterval(updateTimer, 1000);
         updateTimer();
-
-        // 累積進入點閱計數器邏輯 (換用更穩定的 CounterAPI.dev)
-        try {
-            fetch('https://api.counterapi.dev/v1/m0904103/reading-english-exam/up')
-                .then(res => res.json())
-                .then(res => {
-                    document.getElementById('visit-count').innerText = res.count;
-                })
-                .catch(() => {
-                    document.getElementById('visit-count').innerText = '1';
-                });
-        } catch(e) { }
     </script>
 </body>
 </html>
