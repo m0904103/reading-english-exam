@@ -84,8 +84,20 @@
             }
         }
 
+        // 強制解鎖手機瀏覽器音效限制 (播放極短的無聲音頻)
+        function unlockAudio() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0; // 設定為靜音
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.001);
+        }
+
         function playSound(type) {
-            if (!audioCtx) initAudio();
+            initAudio(); // 確保每次播放前引擎都是醒著的
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
@@ -107,7 +119,7 @@
         let cur = 0, score = 0, mis = [], locked = false;
 
         function startQuiz() {
-            initAudio(); // 啟動音效引擎
+            unlockAudio(); // 在首次點擊時強制解鎖音效引擎
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('quiz-box').style.display = 'block';
             show();
