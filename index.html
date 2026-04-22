@@ -252,8 +252,8 @@
         // 倒數計時器系統
         function updateTimer() {
             const now = new Date().getTime();
-            const examStart = new Date("2026-04-25T00:00:00+08:00").getTime();
-            const examEnd = new Date("2026-04-27T23:59:59+08:00").getTime();
+            const examStart = new Date("2026/04/25 00:00:00").getTime();
+            const examEnd = new Date("2026/04/27 23:59:59").getTime();
             const timerEl = document.getElementById("timer-text");
             if (!timerEl) return;
             
