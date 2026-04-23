@@ -57,7 +57,48 @@
 
                 <p style="opacity: 0.7; font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px;">
                     歡迎來到期中模擬練習系統。<br>
-                <div class="score-val" id="sv">0</div>
+                    本測驗包含 Unit 1 - 9 完整題庫，<br>
+                    並提供英文語音朗讀與詳細中文解析。
+                </p>
+                
+                <!-- 靈敏版流量計數徽章 -->
+                <div id="visit-count-box" style="margin-bottom: 25px; display: flex; justify-content: center;">
+                    <img src="https://visitor-badge.laobi.icu/badge?page_id=m0904103.reading-english-exam&color=818cf8" alt="Visits" style="height: 25px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                </div>
+
+                <button class="btn" style="display: block; width: 100%; padding: 18px; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(129, 140, 248, 0.4);" onclick="startQuiz()">
+                    開始測驗 Start Quiz
+                </button>
+
+                <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; align-items: center;">
+                    <span style="font-size: 0.85rem; opacity: 0.8;">專注音效：</span>
+                    <button id="mute-toggle" onclick="toggleMute()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: 0.3s;">🔊</button>
+                </div>
+
+                <!-- 版權與法律聲明區塊 -->
+                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; color: #64748b; line-height: 1.6; text-align: left;">
+                    <p style="margin-bottom: 8px;"><strong>© 2026 版權聲明：</strong></p>
+                    <ul style="padding-left: 15px; margin: 0;">
+                        <li>本測驗題庫由授課老師原創編寫，版權歸原作者所有。</li>
+                        <li>本平台僅供教學與練習之非營利目的使用，嚴禁任何形式之商業轉載。</li>
+                        <li>網頁內引用之電影劇照及影像資料版權均屬原製片公司及版權持有人所有，僅作為教學輔助參考。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="quiz-box" style="display: none;">
+        <div class="header"><h3>English & Culture Quiz</h3></div>
+        <div class="progress-bar"><div class="progress-fill" id="pb"></div></div>
+        <div id="q-content"></div>
+        <button class="btn" id="nb" onclick="next()">Next Question</button>
+    </div>
+
+    <div class="container res" id="res-box" style="display: none;">
+        <div class="quiz-card" style="text-align: center;">
+            <h1 id="res-msg">Finished!</h1>
+            <div class="score-val" id="sv">0</div>
             <div id="total-time" style="font-size: 1.1rem; color: var(--primary); margin: 10px 0 20px 0; font-weight: bold;"></div>
             <div id="mis-list"></div>
             <button class="btn" style="display:block" onclick="location.reload()">Try Again</button>
