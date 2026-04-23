@@ -181,10 +181,15 @@
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel(); // 停止之前的朗讀
             
-            // 語音特例處理：使用正統的發音變體拼寫 potahto，讓語音引擎發出自然流暢的 普-他-透
+            // 語音特例處理：不分大小寫偵測 "potato, potato"，並將第二個替換為 potahto 以產生音變
             let speechText = text;
-            if (speechText.includes("potato, potato")) {
-                speechText = speechText.replace("potato, potato", "potato, potahto");
+            const potatoRegex = /potato,\s*potato/gi;
+            if (potatoRegex.test(speechText)) {
+                speechText = speechText.replace(potatoRegex, (match) => {
+                    // 保持第一個字的大小寫，第二個字強制音變
+                    const first = match.split(',')[0];
+                    return `${first}, potahto`;
+                });
             }
             
             const msg = new SpeechSynthesisUtterance(speechText);
