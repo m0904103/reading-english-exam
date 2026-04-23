@@ -70,11 +70,6 @@
                     開始測驗 Start Quiz
                 </button>
 
-                <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; align-items: center;">
-                    <span style="font-size: 0.85rem; opacity: 0.8;">專注音效：</span>
-                    <button id="mute-toggle" onclick="toggleMute()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: 0.3s;">🔊</button>
-                </div>
-
                 <!-- 版權與法律聲明區塊 -->
                 <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; color: #64748b; line-height: 1.6; text-align: left;">
                     <p style="margin-bottom: 8px;"><strong>© 2026 版權聲明：</strong></p>
@@ -277,9 +272,8 @@
         }
 
         // --- 3. 計時與音效系統 ---
-        let isMuted = false;
         function playTick(isTock) {
-            if (isMuted || !audioCtx || !quizRunning) return; 
+            if (!audioCtx || !quizRunning) return; 
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
@@ -290,12 +284,6 @@
             gain.gain.setValueAtTime(0.05, now);
             gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.05);
             osc.start(now); osc.stop(now + 0.05);
-        }
-
-        function toggleMute() {
-            isMuted = !isMuted;
-            const btn = document.getElementById('mute-toggle');
-            if (btn) btn.innerHTML = isMuted ? '🔇' : '🔊';
         }
 
         let tickCounter = 0;
