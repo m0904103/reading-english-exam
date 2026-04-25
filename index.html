@@ -1,390 +1,129 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>閱讀英文學文化 - 模擬測驗</title>
+    <title>?梯??望?摮豢???- 皜祇?撌脩???/title>
     <style>
-        :root {
-            --primary: #818cf8; --secondary: #c084fc; --bg: #0f172a;
-            --card-bg: #1e293b; --text: #f8fafc; --success: #22c55e; --error: #ef4444;
-        }
-        * { box-sizing: border-box; } /* 修正寬度擠壓問題 */
         body {
-            background-color: var(--bg); color: var(--text);
+            background-color: #0f172a;
+            color: #f8fafc;
             font-family: -apple-system, system-ui, sans-serif;
-            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
         }
-        .container { max-width: 480px; width: 100%; }
-        .header { text-align: center; margin-bottom: 10px; }
-        .progress-bar {
-            width: 100%; height: 6px; background: #334155; border-radius: 10px; margin-bottom: 20px; overflow: hidden;
+        .message-box {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 500px;
+            width: 80%;
+            z-index: 10;
         }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s; }
-        .quiz-card { background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .q-img { width: 100%; border-radius: 12px; margin-bottom: 15px; max-height: 350px; object-fit: contain; background: rgba(0,0,0,0.2); }
-        .badge { background: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .q-text { font-size: 1.15rem; font-weight: 600; margin: 15px 0; line-height: 1.5; }
-        .options { display: flex; flex-direction: column; gap: 10px; }
-        .opt { background: #334155; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
-        .opt.correct { border-color: var(--success); background: rgba(34, 197, 94, 0.1); }
-        .opt.wrong { border-color: var(--error); background: rgba(239, 68, 68, 0.1); }
-        .exp { margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; display: none; font-size: 0.9rem; border-left: 3px solid var(--primary); line-height: 1.6; }
-        .btn { width: 100%; padding: 15px; border-radius: 12px; background: var(--primary); color: white; border: none; font-weight: bold; margin-top: 15px; display: none; cursor: pointer; }
-        .res { display: none; text-align: center; }
-        .score-val { font-size: 4rem; font-weight: bold; color: var(--primary); }
-        .mis-item { text-align: left; background: #334155; padding: 12px; border-radius: 10px; margin-top: 10px; border-left: 4px solid var(--error); }
+        h1 { color: #ef4444; }
+        p { font-size: 1.2rem; line-height: 1.6; color: #cbd5e1; }
+        .countdown {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #fbbf24;
+            margin: 20px 0;
+        }
+        .explosion {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: url('https://media.giphy.com/media/HhTXt43pk1I1W/giphy.gif') no-repeat center center;
+            background-size: cover;
+            z-index: 100;
+            display: none;
+        }
+        .destroyed {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ef4444;
+            font-size: 3.5rem;
+            font-weight: bold;
+            z-index: 101;
+            text-shadow: 2px 2px 10px #000;
+            letter-spacing: 5px;
+            width: 100%;
+        }
+        .btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
     </style>
-    <!-- Confetti 慶祝動畫引擎 -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <!-- 密碼鎖門頁 -->
-    <div id="password-gate" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px;">
-        <div class="container">
-            <div class="quiz-card" style="text-align: center;">
-                <div style="font-size: 3.5rem; margin-bottom: 20px;">🔒</div>
-                <h2 style="color: var(--primary); margin-bottom: 10px;">學生身份驗證</h2>
-                <p style="font-size: 0.95rem; opacity: 0.7; margin-bottom: 30px;">本教學平台僅供內部練習使用<br>請輸入存取密碼進入</p>
-                <input type="password" id="pw-input" placeholder="請輸入密碼" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; margin-bottom: 20px; text-align: center; font-size: 1.1rem; outline: none; transition: 0.3s;">
-                <button class="btn" style="display: block;" onclick="checkPassword()">驗證進入 Verify</button>
-                <div id="pw-error" style="color: var(--error); font-size: 0.9rem; margin-top: 15px; display: none; font-weight: bold;">❌ 密碼錯誤，請洽授課老師</div>
-            </div>
-        </div>
+    <div class="message-box" id="box">
+        <h1>?? ?葉?岫撌脩???/h1>
+        <p>?祆葫撽雯?歇摰??挾?找遙??/p>
+        <p>隢??啜隤脯匱蝥飛蝧?<br>??匱蝥?瘝對?</p>
+        <div class="countdown" id="count">10</div>
+        <button class="btn" id="start-btn">暺????瑟?蝔?</button>
     </div>
 
-    <div class="container" id="start-screen" style="display: none;">
-        <div class="quiz-card" style="text-align: center; padding: 0; overflow: hidden; border: none;">
-            <div style="height: 250px; background: url('cover.png') center/cover no-repeat; position: relative;">
-                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, var(--card-bg)); height: 100px;"></div>
-            </div>
-            <div style="padding: 20px 30px 40px 30px;">
-                <h1 style="color: var(--primary); margin: 0; font-size: 1.8rem;">閱讀英文學文化</h1>
-                <div style="background: var(--secondary); display: inline-block; padding: 2px 15px; border-radius: 20px; font-size: 0.9rem; margin: 10px 0 20px 0; font-weight: bold;">考前特訓</div>
-                
-                <div id="countdown" style="margin: 0 0 25px 0; padding: 15px; background: rgba(239, 68, 68, 0.15); border: 2px dashed var(--error); border-radius: 12px; color: #fca5a5; font-weight: bold; display: flex; flex-direction: column; gap: 8px; animation: pulse 2s infinite;">
-                    <span style="font-size: 0.95rem;">⏳ 距離期中考 (4/25 00:00) 倒數：</span>
-                    <span id="timer-text" style="font-size: 1.6rem; color: #ef4444; letter-spacing: 1px; text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);">計算中...</span>
-                </div>
+    <div class="explosion" id="boom"></div>
+    <div class="destroyed" id="text-boom">蝬脤?撌脣器摨瘥</div>
 
-                <style>@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }</style>
-
-                <p style="opacity: 0.7; font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px;">
-                    歡迎來到期中模擬練習系統。<br>
-                    本測驗包含 Unit 1 - 9 完整題庫，<br>
-                    並提供英文語音朗讀與詳細中文解析。
-                </p>
-                
-                <div id="visit-count-box" style="margin-bottom: 25px; display: flex; justify-content: center;">
-                    <img src="https://visitor-badge.laobi.icu/badge?page_id=m0904103.reading-english-exam&color=818cf8" alt="Visits" style="height: 25px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                </div>
-
-                <button class="btn" style="display: block; width: 100%; padding: 18px; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(129, 140, 248, 0.4);" onclick="startQuiz()">
-                    開始測驗 Start Quiz
-                </button>
-
-                <!-- 法律免責聲明強化區 -->
-                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; color: #64748b; line-height: 1.6; text-align: left;">
-                    <p style="margin-bottom: 8px;"><strong>⚖️ 著作權與教育合理使用聲明：</strong></p>
-                    <ul style="padding-left: 15px; margin: 0; list-style-type: decimal;">
-                        <li><strong>教育目的：</strong> 本平台係基於《著作權法》第 46 條之教學必要，於網路封閉教學環境內重製他人已公開發表之著作。</li>
-                        <li><strong>合法引用：</strong> 網頁內引用之電影劇照係依《著作權法》第 52 條，為教學評量及評論目的之「必要合理範圍」內引用，其權利歸屬原製片公司所有。</li>
-                        <li><strong>非營利性質：</strong> 本系統僅供學生個人練習，無任何商業營利行為。</li>
-                        <li><strong>侵權申訴：</strong> 若版權方認有侵權疑慮，請即刻聯繫管理員，我們將於 24 小時內移除相關內容。</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container" id="quiz-box" style="display: none;">
-        <div class="header"><h3>English & Culture Quiz</h3></div>
-        <div class="progress-bar"><div class="progress-fill" id="pb"></div></div>
-        <div id="q-content"></div>
-        <button class="btn" id="nb" onclick="next()">Next Question</button>
-    </div>
-
-    <div class="container res" id="res-box" style="display: none;">
-        <div class="quiz-card" style="text-align: center;">
-            <h1 id="res-msg">Finished!</h1>
-            <div class="score-val" id="sv">0</div>
-            <div id="total-time" style="font-size: 1.1rem; color: var(--primary); margin: 10px 0 20px 0; font-weight: bold;"></div>
-            <div id="mis-list"></div>
-            <button class="btn" style="display:block" onclick="location.reload()">Try Again</button>
-        </div>
-    </div>
     <script>
-        // --- 0. 密碼驗證系統 ---
-        function checkPassword() {
-            const pw = document.getElementById('pw-input').value;
-            if (pw === 'nou100') {
-                document.getElementById('password-gate').style.display = 'none';
-                document.getElementById('start-screen').style.display = 'block';
-                initAudio();
-            } else {
-                document.getElementById('pw-error').style.display = 'block';
-            }
-        }
-        // 支援 Enter 鍵進入
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && document.getElementById('password-gate').style.display !== 'none') {
-                checkPassword();
-            }
-        });
-
-        // --- 1. 音效與語音核心系統 ---
-        var audioCtx = null;
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
-
-        // 強制解鎖 iOS/手機瀏覽器音效限制
-        function unlockAudio() {
-            initAudio();
-            // 播放一個極短的靜音波形，讓系統認可音訊輸出
-            const buffer = audioCtx.createBuffer(1, 1, 22050);
-            const source = audioCtx.createBufferSource();
-            source.buffer = buffer;
-            source.connect(audioCtx.destination);
-            source.start(0);
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-btn').style.display = 'none';
+            let c = 10;
             
-            if (audioCtx.resume) {
-                audioCtx.resume();
-            }
-        }
-
-        // 監聽全局點擊，確保在任何時候互動都能恢復音訊 (針對 iOS)
-        document.addEventListener('touchstart', () => { if(audioCtx) audioCtx.resume(); }, {once: false});
-        document.addEventListener('click', () => { if(audioCtx) audioCtx.resume(); }, {once: false});
-
-        function playSound(type) {
-            initAudio();
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            
-            if (type === 'correct') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(523, now);
-                osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
-                gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                osc.start(now); osc.stop(now + 0.3);
-            } else {
-                osc.type = 'sawtooth'; 
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.exponentialRampToValueAtTime(70, now + 0.15);
-                gain.gain.setValueAtTime(0.3, now); 
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                
-                const osc2 = audioCtx.createOscillator();
-                const gain2 = audioCtx.createGain();
-                osc2.connect(gain2); gain2.connect(audioCtx.destination);
-                osc2.type = 'sawtooth';
-                osc2.frequency.setValueAtTime(130, now + 0.1);
-                osc2.frequency.exponentialRampToValueAtTime(60, now + 0.25);
-                gain2.gain.setValueAtTime(0.3, now + 0.1);
-                gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                
-                osc.start(now); osc.stop(now + 0.4);
-                osc2.start(now + 0.1); osc2.stop(now + 0.5);
-            }
-        }
-
-        function playVictorySound(perfect) {
-            initAudio();
-            const now = audioCtx.currentTime;
-            const chords = perfect ? [523.25, 659.25, 783.99, 1046.50] : [440, 554.37, 659.25];
-            chords.forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, now + i * 0.15);
-                gain.gain.setValueAtTime(0, now + i * 0.15);
-                gain.gain.linearRampToValueAtTime(0.2, now + i * 0.15 + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.15 + 0.6);
-                osc.start(now + i * 0.15);
-                osc.stop(now + i * 0.15 + 0.6);
-            });
-        }
-
-        // --- 2. 測驗邏輯系統 ---
-        const data = [{"unit": "Unit 1", "question": "What is the main idea conveyed by the phrase \"Potato, Potato\u201d?", "options": ["A. The importance of eating a balanced diet", "B. The significance of agricultural diversity", "C. The notion that pronunciation differences are inconsequential to meaning"], "answer": 2, "explanation": "\u9019\u500b\u7528\u8a9e\u7684\u610f\u601d\u662f\u975e\u5e38\u7d30\u5fae\u4e14\u4e0d\u91cd\u8981\u7684\u5dee\u7570\uff0c\u767c\u97f3\u7684\u4e0d\u540c\u4e26\u4e0d\u6703\u5c0e\u81f4\u5728\u610f\u601d\u4e0a\u6709\u56b4\u91cd\u7684\u8aa4\u89e3\u3002", "image": "unit1.png"}, {"unit": "Unit 1", "question": "In what context might you hear someone say \u201cPotato, Potato\u201d?", "options": ["A. In a cooking class discussing different potato varieties", "B. When acknowledging different pronunciations with the same meaning", "C. During a debate about the best way to prepare potatoes"], "answer": 1, "explanation": "\u7576\u77ad\u89e3\u5230\u5176\u5be6\u662f\u540c\u4e00\u500b\u5b57\u7684\u4e0d\u540c\u767c\u97f3\uff08\u540c\u4e00\u4ef6\u4e8b\u4e0d\u540c\u8aaa\u6cd5\uff09\u6642\u4f7f\u7528\u3002", "image": "u1q2.png"}, {"unit": "Unit 1", "question": "Which of the following statements best describes the function of \u201cPotato, Potato\u201d?", "options": ["A. It emphasizes that variations in pronunciation do not change the intended message.", "B. It highlights the cultural significance of potatoes in different regions.", "C. It represents a linguistic phenomenon known as homophones."], "answer": 0, "explanation": "\u5f37\u8abf\u4e86\u4e0d\u540c\u7684\u767c\u97f3\u4e26\u4e0d\u6703\u5f71\u97ff\u5230\u4e00\u500b\u4eba\u60f3\u8981\u8868\u9054\u7684\u610f\u601d\u3002", "image": "u1q3.png"}, {"unit": "Unit 1", "question": "Where does the expression \u201cPotato, Potato\u201d come from?", "options": ["A. a song \u201cLet's Get It Started\u201d", "B. a song \u201cLet\u2019s Call It Off\u201d", "C. a song \u201cLet's Get It On\u201d"], "answer": 1, "explanation": "\u4f86\u81ea\u65bc\u4e00\u9996\u6b4c\u540d\u70ba\u201cLet\u2019s Call It Off\u201d\u7684\u6b4c\u66f2\u3002", "image": "u1q4.png"}, {"unit": "Unit 1", "question": "\u201cFall\u201d is one of the seasons and is commonly used in American English. What is the similar word typically used in British English?", "options": ["A. summer", "B. autumn", "C. winter"], "answer": 1, "explanation": "\u82f1\u5f0f\u82f1\u6587\u4e2d\u7684\u79cb\u5929\u70ba autumn\u3002", "image": "u1q5.png"}, {"unit": "Unit 2", "question": "What message do you think the statement \"Reading can seriously damage your ignorance.\" conveys?", "options": ["A. Reading can harm your knowledge.", "B. Reading is beneficial for combating ignorance.", "C. Ignorance can be dangerous for reading."], "answer": 1, "explanation": "\u9019\u662f\u4e00\u53e5\u5e7d\u9ed8\u7684\u8a71\uff0c\u610f\u601d\u662f\u300c\u95b1\u8b80\u6703\u7834\u58de\u4f60\u7684\u7121\u77e5\u300d\uff0c\u4e5f\u5c31\u662f\u589e\u9577\u898b\u805e\u3001\u5c0d\u6297\u7121\u77e5\u3002", "image": "unit2.png"}, {"unit": "Unit 2", "question": "Which statement best describes the Extensive Reading Approach?", "options": ["A. It focuses on reading small amounts of text in depth.", "B. It prioritizes reading complex texts with extensive vocabulary and grammar.", "C. It emphasizes reading large quantities of material for overall comprehension and enjoyment."], "answer": 2, "explanation": "\u6cdb\u8b80\uff08Extensive Reading\uff09\u5f37\u8abf\u5927\u91cf\u95b1\u8b80\u4ee5\u7372\u5f97\u6574\u9ad4\u7406\u89e3\u8207\u6a02\u8da3\u3002", "image": "u2q2.png"}, {"unit": "Unit 2", "question": "What is/are the characteristic(s) found in successful extensive reading programs?", "options": ["A. Reading is its own reward.", "B. The teacher/parent is a role model of a reader for students", "C. All of the above."], "answer": 2, "explanation": "\u6210\u529f\u7684\u6cdb\u8b80\u8a08\u756b\u5305\u62ec\u8208\u8da3\u9a45\u52d5\u8207\u699c\u6a23\u5f15\u5c0e\u7b49\u6240\u6709\u4e0a\u8ff0\u7279\u9ede\u3002", "image": "u2q3.png"}, {"unit": "Unit 2", "question": "How can reading skills be promoted?", "options": ["A. By writing", "B. By listening", "C. By reading"], "answer": 2, "explanation": "\u8981\u63d0\u5347\u95b1\u8b80\u80fd\u529b\uff0c\u6700\u597d\u7684\u65b9\u5f0f\u5c31\u662f\u300c\u900f\u904e\u5927\u91cf\u95b1\u8b80\u300d\u3002", "image": "u2q4.png"}, {"unit": "Unit 2", "question": "Why is it important to learn basic knowledge about academic quotations?", "options": ["A. To impress others with citation skills.", "B. To avoid plagiarism and give credit to original sources.", "C. None of the above."], "answer": 1, "explanation": "\u5b78\u8853\u5f15\u7528\u7684\u57fa\u672c\u77e5\u8b58\u662f\u70ba\u4e86\u907f\u514d\u527d\u7aca\u4e26\u5c0a\u91cd\u539f\u5275\u51fa\u8655\u3002", "image": "u2q5.png"}, {"unit": "Unit 3", "question": "What vocabulary size is typically recommended to achieve general reading comprehension?", "options": ["A. A vocabulary of 1,000 word families or 2,000 lexical items.", "B. A vocabulary of 3,000 word families or 5,000 lexical items.", "C. A vocabulary of 10,000 word families or 15,000 lexical items."], "answer": 1, "explanation": "\u6839\u64da\u5b78\u6821\u6559\u6750\uff0c\u4e00\u822c\u95b1\u8b80\u7406\u89e3\u5efa\u8b70\u5177\u5099 3,000 \u500b\u8a5e\u65cf\uff08\u7d04 5,000 \u500b\u8a5e\u9805\uff09\u3002", "image": "unit3.png"}, {"unit": "Unit 3", "question": "What is the likelihood of a reader remembering the meaning of a word encountered more than 18 times in a text?", "options": ["A. 10-15%.", "B. 20-25%.", "C. 30-35%."], "answer": 0, "explanation": "\u6839\u64da\u5b78\u6821\u6a19\u6e96\u7b54\u6848\uff0c\u5373\u4f7f\u9047\u5230 18 \u6b21\u4ee5\u4e0a\uff0c\u55ae\u7d14\u900f\u904e\u95b1\u8b80\u8a18\u4f4f\u55ae\u5b57\u7684\u6a5f\u7387\u7d04\u70ba 10-15%\u3002", "image": "u3q2.png"}, {"unit": "Unit 3", "question": "What principle is recommended for evaluating reading materials?", "options": ["A. The 80%-85% principle.", "B. The 90%-95% principle.", "C. The 95%-98% principle."], "answer": 2, "explanation": "\u7406\u60f3\u7684\u95b1\u8b80\u6750\u6599\u61c9\u5305\u542b 95-98% \u7684\u5df2\u77e5\u55ae\u5b57\uff08C\uff09\u3002", "image": "u3q3.png"}, {"unit": "Unit 3", "question": "How much time per day is recommended for effective reading practice?", "options": ["A. 5-10 minutes.", "B. 15-30 minutes.", "C. 45-60 minutes."], "answer": 1, "explanation": "\u6bcf\u5929\u6301\u4e4b\u4ee5\u6046\u95b1\u8b80 15-30 \u5206\u9418\u6700\u6709\u6548\u3002", "image": "u3q4.png"}, {"unit": "Unit 3", "question": "What activities are recommended for learners to improve their vocabulary?", "options": ["A. Reading novels only.", "B. Watching plenty of movies only.", "C. Both reading a lot and watching plenty of movies"], "answer": 2, "explanation": "\u540c\u6642\u900f\u904e\u5927\u91cf\u95b1\u8b80\u8207\u89c0\u770b\u5f71\u7247\uff08C\uff09\u80fd\u6700\u6709\u6548\u63d0\u5347\u8a5e\u5f59\u529b\u3002", "image": "u3q5.png"}, {"unit": "Unit 4", "question": "What does the idiom \"To be or not to be, that is the question\" commonly express?", "options": ["A. An expression of indecision or hesitation.", "B. A statement of certainty about a decision.", "C. A declaration of existential contemplation."], "answer": 0, "explanation": "\u6839\u64da\u5b78\u6821\u6a19\u6e96\u7b54\u6848\uff0c\u6b64\u8a9e\u53e5\u5e38\u7528\u4f86\u8868\u9054\u5728\u505a\u91cd\u5927\u6c7a\u5b9a\u6642\u7684\u300e\u7336\u8c6b\u4e0d\u6c7a\u6216\u9072\u7591\u300f\u3002", "image": "unit4.png"}, {"unit": "Unit 4", "question": "From which classic does the idiom \"To be or not to be, that is the question\" originate?", "options": ["A. The Importance of Being Earnest, by Oscar Wilde.", "B. Hamlet, by William Shakespeare.", "C. The Adventures of Tom Sawyer, by Mark Twain."], "answer": 1, "explanation": "\u51fa\u81ea\u838e\u58eb\u6bd4\u4e9e\u6700\u8457\u540d\u7684\u60b2\u5287\u300a\u54c8\u59c6\u96f7\u7279\u300b\u3002", "image": "u4q2.png"}, {"unit": "Unit 4", "question": "What main event occurs in \"To be or not to be, that is the question\"?", "options": ["A. Hamlet fights with his friend Horatio.", "B. Hamlet travels around the world.", "C. Hamlet\u2019s mother remarries to his uncle Claudius."], "answer": 2, "explanation": "\u6545\u4e8b\u80cc\u666f\u662f\u54c8\u59c6\u96f7\u7279\u7684\u7236\u89aa\u53bb\u4e16\u5f8c\uff0c\u6bcd\u89aa\u6539\u5ac1\u7d66\u53d4\u53d4\u514b\u52de\u72c4\u65af\u3002", "image": "u4q3.png"}, {"unit": "Unit 4", "question": "What is the central theme of Hamlet\u2019s soliloquy?", "options": ["A. All about the joys of human existence.", "B. All about life and death.", "C. All about afterlife."], "answer": 1, "explanation": "\u9019\u6bb5\u7368\u767d\u6838\u5fc3\u5728\u65bc\u63a2\u8a0e\u751f\u547d\u8207\u6b7b\u4ea1\uff08All about life and death\uff09\u3002", "image": "u4q4.png"}, {"unit": "Unit 4", "question": "What does the phrase \u201cToo much information\u201d typically indicate?", "options": ["A. A surplus of irrelevant or unnecessary details.", "B. Excessive disclosure of personal or private information.", "C. Overloading someone with more details than they can handle or process."], "answer": 1, "explanation": "TMI (Too Much Information) \u901a\u5e38\u6307\u63ed\u9732\u4e86\u904e\u591a\u4e0d\u5fc5\u8981\u7684\u500b\u4eba\u79c1\u4e8b\u3002", "image": "u4q5.png"}, {"unit": "Unit 5", "question": "From what linguistic category does \u201cCarpe Diem\u201d borrow?", "options": ["A. Chinese words.", "B. Latin words.", "C. Korean words."], "answer": 1, "explanation": "Carpe Diem \u662f\u62c9\u4e01\u8a9e\uff08Latin words\uff09\uff0c\u610f\u70ba\u300c\u53ca\u6642\u884c\u6a02\u300d\u3002", "image": "unit5.png"}, {"unit": "Unit 5", "question": "What does \u201cCarpe Diem\u201d mean?", "options": ["A. Seize the opportunity.", "B. Seize the day.", "C. Seize power."], "answer": 1, "explanation": "\u5b57\u9762\u610f\u601d\u5c31\u662f Seize the day\uff08\u6293\u7dca\u4eca\u5929/\u53ca\u6642\u884c\u6a02\uff09\u3002", "image": "u5q2.png"}, {"unit": "Unit 5", "question": "Which of the following is also borrowed from Latin words?", "options": ["A. mahjong", "B. Emoji", "C. Et cetera"], "answer": 2, "explanation": "Et cetera (etc.) \u662f\u62c9\u4e01\u8a9e\uff0c\u610f\u601d\u662f\u300c\u4ee5\u53ca\u5176\u4ed6\u300d\u3002", "image": "u5q3.png"}, {"unit": "Unit 5", "question": "Which of the following movie was introduced in this unit?", "options": ["A. Good Will Hunting.", "B. A Beautiful Mind.", "C. Dead Poets Society."], "answer": 2, "explanation": "\u300a\u6625\u98a8\u5316\u96e8\u300b(Dead Poets Society) \u662f\u63a8\u5ee3\u6b64\u7cbe\u795e\u6700\u8457\u540d\u7684\u96fb\u5f71\u3002", "image": "u5q4.png"}, {"unit": "Unit 5", "question": "Who acts the role of teacher Kenting in the above movie?", "options": ["A. Matt Damon", "B. Robin Williams", "C. Tom Cruise"], "answer": 1, "explanation": "\u7531\u7f85\u8cd3\u00b7\u5a01\u5ec9\u65af\uff08Robin Williams\uff09\u98fe\u6f14\u90a3\u4f4d\u555f\u767c\u5b78\u751f\u7684\u8001\u5e2b\u3002\u5287\u4e2d\u8001\u5e2b\u6b63\u78ba\u7684\u540d\u5b57\u662f John Keating\uff08\u8003\u5377\u8aa4\u690d\u70ba Kenting\uff09\u3002", "image": "u5q5.png"}, {"unit": "Unit 6", "question": "What does the phrase \u201cBeen there, done that\u201d imply?", "options": ["A. Boredom or disinterest.", "B. Accomplishment or achievement.", "C. Experience and familiarity."], "answer": 2, "explanation": "\u9019\u500b\u7247\u8a9e\u7528\u4f86\u8868\u793a\u5c0d\u67d0\u4ef6\u4e8b\u975e\u5e38\u719f\u6089\uff0c\u56e0\u70ba\u81ea\u5df1\u5df2\u7d93\u7d93\u6b77\u904e\u4e86\uff08Experience and familiarity\uff09\u3002", "image": "u6q1.png"}, {"unit": "Unit 6", "question": "Who is the author of the crime novel \u201cCarlito\u2019s Way\u201d introduced in this unit?", "options": ["A. Edwin Torres", "B. Murakami Haruki", "C. Stephen King"], "answer": 0, "explanation": "Edwin Torres \u662f\u9019\u90e8\u72af\u7f6a\u5c0f\u8aaa\u300a\u5361\u5229\u6258\u4e4b\u8def\u300b\u7684\u4f5c\u8005\u3002", "image": "u6q2.png"}, {"unit": "Unit 6", "question": "What tense is used in the phrase \u201cBeen there, done that\u201d?", "options": ["A. The future perfect.", "B. The past perfect.", "C. The present perfect."], "answer": 2, "explanation": "\u9019\u662f\u73fe\u5728\u5b8c\u6210\u5f0f\uff08The present perfect\uff09\u7684\u7701\u7565\u7528\u6cd5\u3002", "image": "u6q3.png"}, {"unit": "Unit 6", "question": "What does the perfect tense indicate?", "options": ["A. Past action with specific duration.", "B. Completed action with ongoing relevance.", "C. Future action with uncertainty."], "answer": 1, "explanation": "\u5b8c\u6210\u5f0f\u901a\u5e38\u8868\u793a\u52d5\u4f5c\u5df2\u7d93\u5b8c\u6210\uff0c\u4f46\u8207\u73fe\u5728\u4ecd\u6709\u95dc\u4fc2\u6216\u5f71\u97ff\uff08ongoing relevance\uff09\u3002", "image": "u6q4.png"}, {"unit": "Unit 6", "question": "The phrase \u201cBeen there, done that\u201d lacks a subject and auxiliary. What is this usage called?", "options": ["A. Phrase reduction", "B. Verb phrase", "C. Omission"], "answer": 2, "explanation": "\u5728\u53e3\u8a9e\u4e2d\u7701\u7565\u4e3b\u8a5e\u8207\u52a9\u52d5\u8a5e\u7684\u73fe\u8c61\u7a31\u70ba Omission\u3002", "image": "u6q5.png"}, {"unit": "Unit 7", "question": "What is the meaning of the phrase \u201cAchilles\u2019 heel\u201d?", "options": ["A. A symbol of physical strength and endurance.", "B. An ancient Greek warrior's footwear.", "C. A fatal weakness or vulnerability."], "answer": 2, "explanation": "\u6e90\u81ea\u5e0c\u81d8\u795e\u8a71\uff0c\u6307\u5f37\u5927\u7684\u4eba\u8eab\u4e0a\u552f\u4e00\u7684\u81f4\u547d\u5f31\u9ede\u6216\u6f0f\u6d1e\uff08fatal weakness or vulnerability\uff09\u3002", "image": "u7q1.png"}, {"unit": "Unit 7", "question": "From which mythology does the phrase \u201cAchilles\u2019 heel\u201d originate?", "options": ["A. Norse Mythology.", "B. Greek mythology.", "C. Hindu mythology."], "answer": 1, "explanation": "\u9019\u662f\u6700\u8457\u540d\u7684\u5e0c\u81d8\u795e\u8a71\uff08Greek mythology\uff09\u5178\u6545\u4e4b\u4e00\u3002", "image": "u7q2.png"}, {"unit": "Unit 7", "question": "Who is the mother of Achilles?", "options": ["A. Thetis", "B. Hera", "C. Athena"], "answer": 0, "explanation": "\u6d77\u6d0b\u5973\u795e Thetis \u5c07\u963f\u57fa\u91cc\u65af\u6d78\u5165\u51a5\u6cb3\u4f7f\u4ed6\u5200\u69cd\u4e0d\u5165\uff0c\u9664\u4e86\u8173\u8e1d\u3002", "image": "u7q3.png"}, {"unit": "Unit 7", "question": "Whose arrow pierced Achilles\u2019 heel in the Trojan war?", "options": ["A. Apollo.", "B. Paris.", "C. Hector."], "answer": 1, "explanation": "\u5e15\u91cc\u65af (Paris) \u5728\u963f\u6ce2\u7f85\u7684\u6307\u5f15\u4e0b\uff0c\u5c04\u4e2d\u4e86\u963f\u57fa\u91cc\u65af\u7684\u8173\u8e1d\u3002", "image": "u7q4.png"}, {"unit": "Unit 7", "question": "When was the phrase \u201cAchilles\u2019 heel\u201d first used in English?", "options": ["A. 17th century.", "B. 18th century.", "C. 19th century."], "answer": 2, "explanation": "\u6839\u64da\u5b78\u6821\u6a19\u6e96\u7b54\u6848\uff0c\u8a72\u7247\u8a9e\u65bc 19 \u4e16\u7d00\uff081810\u5e74\uff09\u7531\u8a69\u4eba\u67ef\u52d2\u5f8b\u6cbb\u9996\u6b21\u4f7f\u7528\u3002", "image": "u7q5.png"}, {"unit": "Unit 8", "question": "What does the phrase \u201cBeware of Greeks bearing gifts\u201d mean?", "options": ["A. Be cautious of unexpected generosity or kindness.", "B. Trust offerings only from known sources.", "C. Avoid Greek customs and traditions."], "answer": 0, "explanation": "\u63d0\u9192\u4eba\u5011\u8981\u8b66\u60d5\u90a3\u4e9b\u770b\u4f3c\u597d\u610f\u3001\u80cc\u5f8c\u537b\u6709\u9670\u8b00\u7684\u79ae\u7269\uff08unexpected generosity or kindness\uff09\u3002", "image": "unit8.png"}, {"unit": "Unit 8", "question": "From which story does the phrase \u201cBeware of Greeks bearing gifts\u201d originate?", "options": ["A. The Peloponnesian War.", "B. The Trojan War.", "C. The Greco-Persian Wars."], "answer": 1, "explanation": "\u6e90\u81ea\u6728\u99ac\u5c60\u57ce\u8a18\uff08The Trojan War\uff09\u7684\u6545\u4e8b\u3002", "image": "u8q2.png"}, {"unit": "Unit 8", "question": "What is the gift bearing from Greeks?", "options": ["A. A golden crown.", "B. The Holy Grail.", "C. A large wooden horse."], "answer": 2, "explanation": "\u5e0c\u81d8\u4eba\u7559\u4e0b\u7684\u5de8\u5927\u6728\u99ac\uff08A large wooden horse\uff09\uff0c\u88e1\u9762\u85cf\u8457\u7cbe\u92b3\u58eb\u5175\u3002", "image": "u8q3.png"}, {"unit": "Unit 8", "question": "What role does Brat Pitt act in the film Troy published in 2004?", "options": ["A. Achilles.", "B. Paris.", "C. Agamemnon."], "answer": 0, "explanation": "2004 \u5e74\u96fb\u5f71\u300a\u7279\u6d1b\u4f0a\u300b\u4e2d\uff0c\u7531\u5e03\u840a\u5fb7\u00b7\u5f7c\u7279\u98fe\u6f14\u963f\u57fa\u91cc\u65af\u3002\u6b63\u78ba\u82f1\u6587\u540d\u662f Brad Pitt\uff08\u8003\u5377\u8aa4\u690d\u70ba Brat Pitt\uff09\u3002", "image": "u8q4.png"}, {"unit": "Unit 8", "question": "In the story of the Trojan War, what consequence did the Trojans face as a result of receiving the gift from the Greeks?", "options": ["A. Victory in battle.", "B. Destruction of Troy.", "C. Alliance with Greece."], "answer": 1, "explanation": "\u7279\u6d1b\u4f0a\u4eba\u5c07\u6728\u99ac\u62c9\u5165\u57ce\u5167\uff0c\u5c0e\u81f4\u57ce\u5e02\u6700\u7d42\u88ab\u6bc0\u6ec5\uff08Destruction of Troy\uff09\u3002", "image": "u8q5.png"}, {"unit": "Unit 9", "question": "What do the terms \u201cElectra complex\u201d and \u201cOedipus complex\u201d refer to?", "options": ["A. A form of sibling rivalry.", "B. Psychoanalytic concepts proposed by Sigmund Freud.", "C. Psychological disorders related to identity crisis."], "answer": 1, "explanation": "\u4f5b\u6d1b\u4f0a\u5fb7\u63d0\u51fa\u7684\u5fc3\u7406\u5206\u6790\u6982\u5ff5\uff08Psychoanalytic concepts\uff09\uff0c\u5206\u5225\u6307\u6200\u7236\u8207\u6200\u6bcd\u60c5\u7d50\u3002", "image": "u9q1.png"}, {"unit": "Unit 9", "question": "In mythology, which characters are linked to Electra and Oedipus?", "options": ["A. Agamemnon and Clytemnestra.", "B. Electra and Achilles.", "C. Oedipus and Antigone."], "answer": 0, "explanation": "\u9019\u4e9b\u5fc3\u7406\u6982\u5ff5\u6e90\u81ea\u65bc\u5e0c\u81d8\u60b2\u5287\u4e2d\u963f\u4f3d\u9580\u8fb2 (Agamemnon) \u8207\u514b\u5442\u6cf0\u6d85\u65af\u7279\u62c9 (Clytemnestra) \u7684\u5bb6\u5ead\u6545\u4e8b\u3002", "image": "u9q2.png"}, {"unit": "Unit 9", "question": "What is the significance of the figure Prometheus?", "options": ["A. A Greek god associated with water and destruction.", "B. A mythological hero who benefits humanity.", "C. A symbol of power and wealth in ancient mythology."], "answer": 1, "explanation": "\u666e\u7f85\u7c73\u4fee\u65af\u662f\u70ba\u4eba\u985e\u5e36\u4f86\u5229\u76ca\uff08benefits humanity\uff09\u7684\u82f1\u96c4\u3002", "image": "u9q3.png"}, {"unit": "Unit 9", "question": "What is the story behind Pandora\u2019s box?", "options": ["A. A tale of a forbidden love affair.", "B. A mythological account of the creation of the world.", "C. A cautionary myth about the consequences of curiosity and disobedience."], "answer": 2, "explanation": "\u6f58\u6735\u62c9\u7684\u6545\u4e8b\u662f\u95dc\u65bc\u597d\u5947\u5fc3\u8207\u4e0d\u670d\u5f9e\uff08curiosity and disobedience\uff09\u6240\u5e36\u4f86\u5f8c\u679c\u7684\u8b66\u4e16\u795e\u8a71\u3002", "image": "u9q4.png"}, {"unit": "Unit 9", "question": "What is the mythological story of Narcissus and Echo about?", "options": ["A. A tale of forbidden love between gods and mortals.", "B. A cautionary myth about vanity and self-absorption.", "C. An epic journey of heroes seeking redemption and glory."], "answer": 1, "explanation": "\u7d0d\u897f\u745f\u65af\u8207\u611b\u53ef\u7684\u6545\u4e8b\u662f\u95dc\u65bc\u865b\u69ae\u8207\u81ea\u6211\u6c89\u6eba\uff08vanity and self-absorption\uff09\u7684\u8b66\u4e16\u795e\u8a71\u3002", "image": "u9q5.png"}];
-        let cur = 0, score = 0, mis = [], locked = false;
-        let quizRunning = false;
-        let sessionSeconds = 0;
-
-        function startQuiz() {
-            unlockAudio(); 
-            quizRunning = true;
-            sessionSeconds = 0;
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('quiz-box').style.display = 'block';
-            show();
-        }
-
-        function speak(text) {
-            if (!window.speechSynthesis) return;
-            window.speechSynthesis.cancel(); 
-            isTickActive = false; // 唸題目時不響滴答聲
-            
-            let speechText = text;
-            const potatoRegex = /potato,\s*potato/gi;
-            if (potatoRegex.test(speechText)) {
-                speechText = speechText.replace(potatoRegex, (match) => {
-                    const first = match.split(',')[0];
-                    return `${first}, potahto`;
-                });
-            }
-            const msg = new SpeechSynthesisUtterance(speechText);
-            msg.lang = 'en-US';
-            msg.rate = 0.9; 
-            msg.pitch = 1.1; 
-            
-            // 語音結束後才開啟滴答聲
-            msg.onend = () => {
-                if (quizRunning && !locked) {
-                    isTickActive = true;
-                }
+            const speak = (text) => {
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'zh-TW';
+                u.rate = 1.0;
+                u.pitch = 0.8;
+                window.speechSynthesis.speak(u);
             };
-            
-            const voices = window.speechSynthesis.getVoices();
-            const femaleVoice = voices.find(v => 
-                (v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Microsoft Zira')) && v.lang.includes('en')
-            );
-            if (femaleVoice) msg.voice = femaleVoice;
-            window.speechSynthesis.speak(msg);
-        }
 
-        function show() {
-            locked = false; isTickActive = false; const q = data[cur];
-            document.getElementById('pb').style.width = (cur/data.length)*100 + '%';
-            document.getElementById('q-content').innerHTML = `
-                <div class="quiz-card">
-                    <span class="badge">${q.unit}</span>
-                    <img src="${q.image}" class="q-img" onerror="this.style.display='none'">
-                    <div class="q-text">${q.question}</div>
-                    <div class="options">
-                        ${q.options.map((o, i) => `<div class="opt" onclick="check(${i})">${o}</div>`).join('')}
-                    </div>
-                    <div class="exp" id="ex"><strong>解析：</strong>${q.explanation}</div>
-                </div>
-            `;
-            document.getElementById('nb').style.display = 'none';
-            setTimeout(() => speak(q.question), 500);
-        }
-
-        function check(i) {
-            if(locked) return; locked = true;
-            isTickActive = false; // 答題後立刻停止滴答聲
-            initAudio(); 
-            const q = data[cur], opts = document.querySelectorAll('.opt');
-            if(i === q.answer) { opts[i].classList.add('correct'); score++; playSound('correct'); }
-            else { 
-                opts[i].classList.add('wrong'); opts[q.answer].classList.add('correct'); 
-                mis.push({q:q.question, a:q.options[q.answer], e:q.explanation}); 
-                playSound('wrong');
-            }
-            document.getElementById('ex').style.display = 'block';
-            document.getElementById('nb').style.display = 'block';
-        }
-
-        function next() {
-            cur++; if(cur < data.length) show(); else end();
-        }
-
-        function end() {
-            quizRunning = false; 
-            document.getElementById('quiz-box').style.display='none';
-            document.getElementById('res-box').style.display='block';
-            let finalScore = Math.round((score/data.length)*100);
-            document.getElementById('sv').innerText = finalScore;
-            
-            const m = Math.floor(sessionSeconds / 60);
-            const s = sessionSeconds % 60;
-            document.getElementById('total-time').innerText = `⏱️ 總共花費時間：${m}分${s}秒`;
-            
-            let msgEl = document.getElementById('res-msg');
-            if (finalScore === 100) {
-                msgEl.innerHTML = '🏆 Perfect Score!<br><span style="font-size:1.5rem">太神了！滿分天才！</span> 🏆';
-                msgEl.style.color = '#fbbf24';
-                confetti({ particleCount: 250, spread: 140, origin: { y: 0.6 }, zIndex: 9999 });
-                playVictorySound(true);
-            } else if (finalScore >= 80) {
-                msgEl.innerHTML = '🎉 Great Job!<br><span style="font-size:1.5rem">表現得非常棒！</span> 🎉';
-                msgEl.style.color = '#34d399';
-                confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 }, zIndex: 9999 });
-                playVictorySound(false);
-            } else if (finalScore >= 60) {
-                msgEl.innerHTML = '👍 Good effort!<br><span style="font-size:1.5rem">有過關！再接再厲！</span> 👍';
-                msgEl.style.color = '#60a5fa';
-                playVictorySound(false);
-            } else {
-                msgEl.innerHTML = "💪 Don't give up!<br><span style='font-size:1.5rem'>記住錯題，繼續努力！</span> 💪";
-                msgEl.style.color = '#ef4444';
-            }
-
-            if(mis.length > 0) {
-                document.getElementById('mis-list').innerHTML = '<h4>Review Mistakes:</h4>' + 
-                mis.map(m => `<div class="mis-item"><b>${m.q}</b><br><span style="color:#22c55e">Ans: ${m.a}</span><br><small>${m.e}</small></div>`).join('');
-            }
-        }
-
-        // --- 3. 計時與音效系統 ---
-        let isTickActive = false;
-        function playTick(isTock) {
-            if (!audioCtx || !quizRunning || !isTickActive) return; 
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(isTock ? 500 : 800, now);
-            gain.gain.setValueAtTime(0.05, now);
-            gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.05);
-            osc.start(now); osc.stop(now + 0.05);
-        }
-
-        let tickCounter = 0;
-        function updateTimer() {
-            const now = new Date().getTime();
-            const examStart = new Date("2026/04/25 00:00:00").getTime();
-            const examEnd = new Date("2026/04/27 23:59:59").getTime();
-            const timerEl = document.getElementById("timer-text");
-            if (!timerEl) return;
-            
-            if (quizRunning) {
-                sessionSeconds++;
-                tickCounter++;
-                if (isTickActive) playTick(tickCounter % 2 === 0);
-            }
-
-            if (now < examStart) {
-                const diff = examStart - now;
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-                timerEl.innerText = `${d}天 ${h}小時 ${m}分 ${s}秒`;
-            } else if (now >= examStart && now <= examEnd) {
-                timerEl.innerHTML = "🔥 期中考進行中！把握最後複習機會！";
-                timerEl.style.color = "var(--success)";
-                timerEl.style.textShadow = "0 0 10px rgba(34, 197, 94, 0.5)";
-            } else {
-                timerEl.innerHTML = "✅ 期中考已結束，辛苦了！";
-                timerEl.style.color = "#94a3b8";
-                timerEl.style.textShadow = "none";
-            }
-        }
-        setInterval(updateTimer, 1000);
-        updateTimer();
+            const timer = setInterval(() => {
+                document.getElementById('count').innerText = c;
+                speak(c.toString());
+                
+                if (c === 0) {
+                    clearInterval(timer);
+                    setTimeout(() => {
+                        // ?剜??單?
+                        const audio = new Audio('https://www.soundjay.com/mechanical/sounds/explosion-01.mp3');
+                        audio.volume = 1.0;
+                        audio.play().catch(e => console.log('Audio error:', e));
+                        
+                        document.getElementById('box').style.display = 'none';
+                        document.getElementById('boom').style.display = 'block';
+                        
+                        setTimeout(() => {
+                            document.getElementById('text-boom').style.display = 'block';
+                            document.getElementById('boom').style.opacity = '0.3';
+                        }, 2000);
+                    }, 800);
+                }
+                c--;
+            }, 1000);
+        });
     </script>
 </body>
 </html>
