@@ -1,48 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>任務完成 - 閱覽英文學文化</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #f43f5e; --bg-dark: #020617; }
-        body { background-color: var(--bg-dark); color: #f8fafc; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; margin: 0; text-align: center; }
-        .container { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 2rem; max-width: 600px; width: 90%; }
-        h1 { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 2.5rem; margin-bottom: 1.5rem; background: linear-gradient(to right, #f43f5e, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .countdown { font-family: 'Inter', sans-serif; font-size: 8rem; font-weight: 900; color: #f8fafc; margin: 2rem 0; text-shadow: 0 0 20px rgba(244, 63, 94, 0.5); }
-        .btn { background: var(--primary); color: white; border: none; padding: 1.25rem 2.5rem; font-size: 1.25rem; font-weight: 700; border-radius: 1rem; cursor: pointer; transition: all 0.3s ease; }
-    </style>
-</head>
-<body>
-    <div class="container" id="box">
-        <div style="padding: 0.5rem 1rem; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); color: #f43f5e; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; margin-bottom: 2rem; display: inline-block;">SYSTEM TERMINATED</div>
-        <h1>期中考試任務完成</h1>
-        <p>本測驗網頁已完成階段性任務。感謝參與，請啟動銷毀程序以安全關閉頁面。</p>
-        <div class="countdown" id="count">10</div>
-        <button class="btn" id="startBtn">啟動銷毀程序</button>
-    </div>
-    <script>
-        const btn = document.getElementById('startBtn');
-        const countDiv = document.getElementById('count');
-        const explosionAudio = new Audio('https://www.soundjay.com/mechanical/sounds/explosion-01.mp3');
-        btn.onclick = () => {
-            btn.style.display = 'none';
-            let c = 10;
-            const timer = setInterval(() => {
-                countDiv.innerText = c;
-                const u = new SpeechSynthesisUtterance(c.toString());
-                u.lang = 'zh-TW';
-                window.speechSynthesis.speak(u);
-                if (c === 0) {
-                    clearInterval(timer);
-                    explosionAudio.play();
-                    document.body.innerHTML = '<div style="text-align:center;"><h1 style="color:#ef4444; font-size:5rem; font-weight:900;">網頁已徹底銷毀</h1><p style="color:#f8fafc; font-size:1.5rem;">請回到「創課」繼續學習，期末考加油！</p></div>';
-                    document.body.style.backgroundColor = '#000';
-                }
-                c--;
-            }, 1000);
-        };
-    </script>
-</body>
-</html>
+    <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+            <title>MISSION COMPLETE - NASA PROTOCOL</title>
+        <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Inter:wght@900&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+        <style>
+                    :root { --primary: #f43f5e; --bg-dark: #020617; }
+                    body { background-color: var(--bg-dark); color: #f8fafc; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; height: 100dvh; overflow: hidden; margin: 0; text-align: center; padding: env(safe-area-inset-top) env(safe-area-inset-bottom); }
+            
+        </style></title>
+    </head>
