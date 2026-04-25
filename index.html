@@ -1,130 +1,48 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>?梯??望?摮豢???- 皜祇?撌脩???/title>
+    <title>任務完成 - 閱覽英文學文化</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: -apple-system, system-ui, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-            overflow: hidden;
-        }
-        .message-box {
-            background: #1e293b;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-width: 500px;
-            width: 80%;
-            z-index: 10;
-        }
-        h1 { color: #ef4444; }
-        p { font-size: 1.2rem; line-height: 1.6; color: #cbd5e1; }
-        .countdown {
-            font-size: 5rem;
-            font-weight: bold;
-            color: #fbbf24;
-            margin: 20px 0;
-        }
-        .explosion {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: url('https://media.giphy.com/media/HhTXt43pk1I1W/giphy.gif') no-repeat center center;
-            background-size: cover;
-            z-index: 100;
-            display: none;
-        }
-        .destroyed {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ef4444;
-            font-size: 3.5rem;
-            font-weight: bold;
-            z-index: 101;
-            text-shadow: 2px 2px 10px #000;
-            letter-spacing: 5px;
-            width: 100%;
-        }
-        .btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 20px;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
+        :root { --primary: #f43f5e; --bg-dark: #020617; }
+        body { background-color: var(--bg-dark); color: #f8fafc; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; margin: 0; text-align: center; }
+        .container { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 3rem; border-radius: 2rem; max-width: 600px; width: 90%; }
+        h1 { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 2.5rem; margin-bottom: 1.5rem; background: linear-gradient(to right, #f43f5e, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .countdown { font-family: 'Inter', sans-serif; font-size: 8rem; font-weight: 900; color: #f8fafc; margin: 2rem 0; text-shadow: 0 0 20px rgba(244, 63, 94, 0.5); }
+        .btn { background: var(--primary); color: white; border: none; padding: 1.25rem 2.5rem; font-size: 1.25rem; font-weight: 700; border-radius: 1rem; cursor: pointer; transition: all 0.3s ease; }
     </style>
 </head>
 <body>
-    <div class="message-box" id="box">
-        <h1>?? ?葉?岫撌脩???/h1>
-        <p>?祆葫撽雯?歇摰??挾?找遙??/p>
-        <p>隢??啜隤脯匱蝥飛蝧?<br>??匱蝥?瘝對?</p>
+    <div class="container" id="box">
+        <div style="padding: 0.5rem 1rem; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); color: #f43f5e; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; margin-bottom: 2rem; display: inline-block;">SYSTEM TERMINATED</div>
+        <h1>期中考試任務完成</h1>
+        <p>本測驗網頁已完成階段性任務。感謝參與，請啟動銷毀程序以安全關閉頁面。</p>
         <div class="countdown" id="count">10</div>
-        <button class="btn" id="start-btn">暺????瑟?蝔?</button>
+        <button class="btn" id="startBtn">啟動銷毀程序</button>
     </div>
-
-    <div class="explosion" id="boom"></div>
-    <div class="destroyed" id="text-boom">蝬脤?撌脣器摨瘥</div>
-
     <script>
-        document.getElementById('start-btn').addEventListener('click', () => {
-            document.getElementById('start-btn').style.display = 'none';
+        const btn = document.getElementById('startBtn');
+        const countDiv = document.getElementById('count');
+        const explosionAudio = new Audio('https://www.soundjay.com/mechanical/sounds/explosion-01.mp3');
+        btn.onclick = () => {
+            btn.style.display = 'none';
             let c = 10;
-            
-            const speak = (text) => {
-                const u = new SpeechSynthesisUtterance(text);
-                u.lang = 'zh-TW';
-                u.rate = 1.0;
-                u.pitch = 0.8;
-                window.speechSynthesis.speak(u);
-            };
-
             const timer = setInterval(() => {
-                document.getElementById('count').innerText = c;
-                speak(c.toString());
-                
+                countDiv.innerText = c;
+                const u = new SpeechSynthesisUtterance(c.toString());
+                u.lang = 'zh-TW';
+                window.speechSynthesis.speak(u);
                 if (c === 0) {
                     clearInterval(timer);
-                    setTimeout(() => {
-                        // ?剜??單?
-                        const audio = new Audio('https://www.soundjay.com/mechanical/sounds/explosion-01.mp3');
-                        audio.volume = 1.0;
-                        audio.play().catch(e => console.log('Audio error:', e));
-                        
-                        document.getElementById('box').style.display = 'none';
-                        document.getElementById('boom').style.display = 'block';
-                        
-                        setTimeout(() => {
-                            document.getElementById('text-boom').style.display = 'block';
-                            document.getElementById('boom').style.opacity = '0.3';
-                        }, 2000);
-                    }, 800);
+                    explosionAudio.play();
+                    document.body.innerHTML = '<div style="text-align:center;"><h1 style="color:#ef4444; font-size:5rem; font-weight:900;">網頁已徹底銷毀</h1><p style="color:#f8fafc; font-size:1.5rem;">請回到「創課」繼續學習，期末考加油！</p></div>';
+                    document.body.style.backgroundColor = '#000';
                 }
                 c--;
             }, 1000);
-        });
+        };
     </script>
 </body>
 </html>
