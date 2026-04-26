@@ -1,85 +1,20 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-        <title>MISSION COMPLETE - SYSTEM TERMINATED</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Outfit:wght@500;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #f43f5e; --bg-dark: #020617; }
-        body {
-            background-color: var(--bg-dark);
-            color: #f8fafc;
-            font-family: 'Outfit', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100dvh;
-            margin: 0;
-            text-align: center;
-            overflow: hidden;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
- padding: 3rem 1.5rem;
-            border-radius: 2rem;
-            max-width: 380px;
-            width: 90%;
-            z-index: 10;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: rgba(244, 63, 94, 0.1);
-            color: var(--primary);
-            border-radius: 2rem;
-            font-weight: 800;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(244, 63, 94, 0.3);
-            }
-        h1 { font-family: 'Inter', sans-serif; font-size: 1.8rem; margin-bottom: 1.5rem; color: #fff; line-height: 1.3; font-weight: 900; }
-        .message-box {
-            text-align: left;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 1.5rem;
-            border-radius: 1.2rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .message-item {
-            margin-bottom: 0.8rem;
-            font-size: 0.9rem;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-        }
-        .message-item span { color: #f8fafc; margin-left: 0.5rem; font-weight: 600; }
-        .btn-ios {
-            background: #fff;
-            color: #000;
-        border: none;
-            padding: 1.2rem 2.5rem;
-            border-radius: 100px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            width: 100%;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-        }
-        .btn-ios:active { transform: scale(0.96); opacity: 0.9; }
-        .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        </style>
-    </head>
-    <body>
-    <div class="particles" id="particles"></div>div>
-        <div class="glass-panel">
-            <div class="status-badge">MISSION CO<h1>Special Training Completed</h1>
-            </h1>
+67.         #explosion-layer { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 100; display: none; background-size: cover; background-position: center; }
+68.         #flash { position: fixed; top:0; left:0; width:100%; height:100%; background: #fff; z-index: 101; opacity: 0; pointer-events: none; }
+69. 
+70.         @keyframes shake { 0% { transform: translate(0,0); } 10% { transform: translate(-5px, 5px); } 20% { transform: translate(5px, -5px); } 100% { transform: translate(0,0); } }
+71.         .shaking { animation: shake 0.1s infinite; }
+72.     </style>
+73. </head>
+74. <body>
+75.     <div class="glass-panel" id="main-container">
+76.         <div id="auth-section">
+77.             <div class="status-badge">FINAL MISSION</div>
+78.             <h1>期中考特訓已圓滿達成任務</h1>
+79.             <div class="message-box">
+80.                 本測驗網頁為《閱讀英文學文化》，專為期中考特訓所生。<br><br>
+81. <body>
+82. <div class="particles" id="particles"></div>div>
+83. <div class="glass-panel">
+84.     <div class="status-badge">MISSION CO<h1>Special Training Completed</h1>
+85.     </h1>
+86. 
